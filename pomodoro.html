@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> <!--This needs to be above jQuery-->
+
+<style>
+
+@import url(https://fonts.googleapis.com/css?family=Pacifico|Open+Sans:300);
+
+    body {
+        background: #333333;
+    }    
+    
+    .title {
+        color: white;
+        font-family: 'Pacifico';
+        font-size: 500%;
+        margin-top: 40px;
+    }
+    
+    .labels {
+        margin-bottom: -40px;
+    }
+    
+    .break, .session {
+        color: white;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .breakminus, .breakplus, .sessionminus, .sessionplus {
+        background: #333333;
+        border: none;
+        cursor: pointer;
+        color: white;
+    }
+    
+    .pomodoro {
+        color: white;
+        border: 2px solid #99CC00;
+        border-radius: 200px;
+        height: 300px;
+        margin: 0 auto;   /* center circle */
+        width: 30%;
+        padding-top: 60px;
+        font-size: 300%;
+        cursor: pointer;
+    }
+    
+</style>
+    
+<script>
+
+$(document).ready(function() {
+  var sessionCount = parseInt($("#time").html());    
+  var breakCount = parseInt($("#breaktime").html());
+  var sessionCountDown;
+  var breakCountDown;
+  var clickCount = 0;
+    
+    $(".pomodoro").click(function() {
+      clickCount++;
+      
+      if (clickCount % 2 !== 0) {
+      sessionCountDown = setInterval(sessionTimer, 1000);
+      //change number from seconds to minutes
+      sessionCount *= 60;
+      breakCount *= 60;
+    
+      function sessionTimer() {
+        sessionCount -= 1;
+        if (sessionCount % 60 >= 10) {
+          $("#time").html(Math.floor(sessionCount/60)+":"+sessionCount%60);
+        } else if (sessionCount % 60 < 10) {
+          $("#time").html(Math.floor(sessionCount/60)+":0"+sessionCount%60);
+        } else if (sessionCount < 0) {
+          clearInterval(sessionCountDown);
+          $("#time").html($("#breaktime").html());
+          $("#label").html("Break!");
+          breakCountDown = setInterval(breakTimer, 1000);  
+        }
+      }
+                 
+      function breakTimer() {
+        breakCount -= 1;
+        if (breakCount % 60 >= 10) {
+          $("#time").html(Math.floor(breakCount/60)+":"+breakCount%60);
+        } else if (sessionCount % 60 < 10) {
+          $("#time").html(Math.floor(breakCount/60)+":0"+breakCount%60);
+        } else if (parseInt($("#time").html()) < 0) {
+          clearInterval(breakCountDown);
+          $("#time").html($("#sessiontime").html());
+          $("#label").html("Session!"); 
+          sessionCountDown = setInterval(sessionTimer, 1000);
+        }
+      }
+      } else if (clickCount % 2 === 0) {
+            clearInterval(sessionCountDown);
+            clearInterval(breakCountDown);
+            $("#time").html($("#sessiontime").html());
+            $("#label").html("Session!"); 
+            sessionCount = parseInt($("#time").html());    
+            breakCount = parseInt($("#breaktime").html());
+        }
+        
+    });
+    //end pomodoro click      
+    
+      $(".breakminus").click(function() {
+          if ($("#breaktime").html() > 1) {
+            $("#breaktime").html(Number($("#breaktime").html())-1);
+          }
+          breakCount = parseInt($("#breaktime").html());
+      })
+         
+      $(".breakplus").click(function() {
+        $("#breaktime").html(Number($("#breaktime").html())+1);
+        breakCount = parseInt($("#breaktime").html());
+      })
+      
+      $(".sessionminus").click(function() {
+        if ($("#sessiontime").html() > 1) {
+          $("#sessiontime").html($("#sessiontime").html()-1);
+        }
+        $("#time").html($("#sessiontime").html());
+        sessionCount = parseInt($("#time").html());
+      })
+          
+      $(".sessionplus").click(function() {
+        $("#sessiontime").html(Number($("#sessiontime").html())+1);
+        $("#time").html($("#sessiontime").html());
+        sessionCount = parseInt($("#time").html());
+      })
+         
+});
+//end document ready                 
+ 
+</script>  
+</head>
+
+<body>	
+  <div class="container-fluid">
+    <h1 class="title text-center">Pomodoro Clock</h1>
+      
+    <div class="row labels">
+      <div class="break col-lg-2 offset-lg-4">BREAK LENGTH</div>
+      <div class="session col-lg-2">SESSION LENGTH</div>
+    </div>
+      
+    <div class="row">
+      <div class="break col-lg-2 offset-lg-4">
+        <button class="breakminus">-</button>
+          <span id="breaktime">3</span>
+        <button class="breakplus">+</button>
+      </div>
+      <div class="session col-lg-2">
+        <button class="sessionminus">-</button>
+          <span id="sessiontime">3</span>
+        <button class="sessionplus">+</button>
+      </div>
+    </div>  
+      
+    <div class="pomodoro text-center">
+      <p id="label">Session!</p>
+      <p id="time">3</p>
+    </div>
+      
+  </div>
+</body>
+</html>
